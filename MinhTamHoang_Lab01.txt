@@ -1,0 +1,24 @@
+We notice from the draftsman plot that there exists a negative relationship between LSTAT and MEDV. The value of 
+correlation between these two variables is -0.7376627, which indicates that increasing values of LSTAT 
+corresponds to decreasing values of MEDV.
+
+As can be seen from the plot, there is not a linear relationship between these two variables. We may want to 
+fit a quadratic model and a cubic model to evaluate which model shows the best performance in
+representing the relationship between MEDV and LSTAT.
+
+From the plot, it seems to me that the cubic regression model and the quadratic regression mode capture the relationship 
+between LSTAT and MEDV better than linear regression model does. However, it is difficult and unconvincing
+to visually assess the model fits and determine which one is the best. Therefore, I computed SSE to 
+evaluate and compare these three model fits.
+
+The cubic model has the smallest sum square residual, which indicates that the difference betwwen model
+predictions and the real data is smallest. We can tell that the cubic model shows a better performance in
+representing the relstionship between LSTAT and MEDV in comparison with the linear model and the quadractic model.
+
+
+I decided to add two more explanatory variables to the model and compare multiple regression model to the cubic model and the linear above.
+The multiple regression model has three explanatory variables, which are LSTAT, TAX, and B.
+The multiple regression model has a greater sum square residual in comparison with the cubic model, which suggests that the cubic model produces a better fit.
+Meanwhile, the multiple regression models shows a better preformance in predicting the MEDV than the single linear regression model.
+So, I did t-test (via summary function) to evaluate the significance of the three explanatory variables. Only two variables, LSTAT
+and TAX are statistically significant. Overall, the inclusion of the "LSTAT," "B," and "TAX" variables explains more of the variability of the data, which indicates that there is a significant improvement over the smaller model.
