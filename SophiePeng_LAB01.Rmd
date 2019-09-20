@@ -1,0 +1,363 @@
+---
+title: "Class4Lab"
+output: html_document
+name: "Yongyi (Sophie) Peng"
+---
+
+**The Goal**
+Given a data set containing characteristics about the Boston housing market, explore methods for predicting housing prices.
+
+You'll need to clone this repository using RStudio first. 
+Practice writing and adding code that produces a simple linear regression, multiple linear regression, and polynomial regression.
+Include a visual and quantitative method for assessing whether some models may better explain housing prices than other models.
+
+We will discuss some models students have proposed and ways to communicate these models to a lay audience.
+
+### Data
+The dataset and the data dictionary are included in the folder called data.
+
+### Questions
+
+* How would you explain SSE?
+* How would you explain your model?
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+Housing <- read.csv('data/boston_data_updated.csv')
+head(Housing)
+summary(Housing)
+```
+
+
+
+
+##(1) Multiple linear regression model:
+Y is MEDV which represents median value of owner-occupied homes in $1000s
+```{r}
+multipleLinearRegressionOne <- lm(MEDV ~ CRIM+ZN+INDUS+CHAS+NOX+RM+AGE+DIS+RAD+TAX+PTRATIO+B+LSTAT, data = Housing)
+
+print(multipleLinearRegressionOne)
+
+```
+
+The predicted model is :
+
+predicted MEDV = 3.646e+01 -1.080e-01*CRIM + 4.642e-02*ZN+2.056e-02*INDUS+2.687e+00*CHAS-1.777e+01*NOX+3.810e+00*RM+6.922e-04*AGE-1.476e+00*DIS+3.060e-01*RAD-1.233e-02*TAX-9.527e-01*PTRATIO+9.312e-03*B-5.248e-01*LSTAT
+
+```{r pressure, echo=FALSE}
+plot(Housing)
+```
+
+
+
+```{r pressure, echo=FALSE}
+plot(multipleLinearRegressionOne)
+```
+
+From the QQ plot, we can see that the right tail doesn't fit the line very well, but overall not too bad.
+
+```{r}
+summary(multipleLinearRegressionOne)
+confint(multipleLinearRegressionOne)
+```
+The R-squared value is pretty good which means that the model fit the data pretty well.
+
+
+###Only use four predictors to compare the models:
+In this part, I only used four predictors instead of using all the predictors. I will use predictors CRIM, RM, INDUS, and DIS in simple linear regression and polynomial regression model. 
+
+Multiple linear regression:
+```{r}
+multipleLinearRegressionTwo <- lm(MEDV ~ CRIM+RM+INDUS+DIS, data = Housing)
+print(multipleLinearRegressionTwo)
+
+```
+
+Model:
+predicted MEDV = -17.2026-0.2181*CRIM+7.4761*RM-0.3709*INDUS-0.6142*DIS
+
+```{r pressure, echo=FALSE}
+plot(multipleLinearRegressionTwo)
+```
+```{r}
+summary(multipleLinearRegressionTwo)
+confint(multipleLinearRegressionTwo)
+```
+The adjusted R-squared value decrease after the number of predictors decrease.
+Since I only used CRIM, RM, INDUS, and DIS as predictors in simple linear regression and polynomial regression, I would only look at the second multiple linear regression model which is predicted MEDV = -17.2026-0.2181*CRIM+7.4761*RM-0.3709*INDUS-0.6142*DIS.
+
+
+
+
+
+
+##(2) Simple linear Regression:
+For simple linear regression, I will only try four predictors since there are so many predictors in the dataset.
+
+```{r}
+head(Housing)
+```
+
+####The first predictor: CRIM
+The first predictor I chose is CRIM which is the the per capita crime rate by town.
+Model: predicted MEDV = 24.0331-0.4152*CRIM
+```{r}
+simpleLinearRegressionOne <- lm(MEDV~CRIM, data = Housing)
+print(simpleLinearRegressionOne)
+```
+```{r pressure, echo=FALSE}
+
+plot(Housing$CRIM, Housing$MEDV, xlab = "CRIM", ylab="MEDV")
+betas <- coef(simpleLinearRegressionOne)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(min(Housing$CRIM), max(Housing$CRIM),1)
+yPredictions <- beta0 + beta1*xVals
+lines(xVals, yPredictions, col='red')
+
+```
+The scatterplot shows that the linear relationship between MEDV and CRIM is very weak.Thus, I don't think simple linear regression is a good model for this data. 
+
+```{r}
+summary(simpleLinearRegressionOne)
+confint(simpleLinearRegressionOne)
+```
+The R-squared value is weak. This indicates that the model doesn't fit the data very well.
+
+
+
+####The second predictor: RM
+The second predictor I chose is RM which is the average number of rooms per dwelling
+Model: predicted MEDV =-34.671+9.102*RM         
+```{r}
+simpleLinearRegressionTwo <- lm(MEDV~RM, data = Housing)
+print(simpleLinearRegressionTwo)
+```
+```{r pressure, echo=FALSE}
+
+plot(Housing$RM, Housing$MEDV, xlab = "RM", ylab="MEDV")
+betas <- coef(simpleLinearRegressionTwo)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(min(Housing$RM), max(Housing$RM),1)
+yPredictions <- beta0 + beta1*xVals
+lines(xVals, yPredictions, col='red')
+
+```
+From the scatterplot, we can see that there's a linear relationship between RM and MEDV.
+
+```{r}
+summary(simpleLinearRegressionTwo)
+confint(simpleLinearRegressionTwo)
+```
+The R-squared value is weak, this indicates that the model doesn't fit the data very well.
+
+
+
+####The third predictor: INDUS
+The third predictor I chose is INDUS which is the proportion of non-retail business acres per town.
+Model: predicted MEDV = 29.7549-0.6485*INDUS
+```{r}
+simpleLinearRegressionThree <- lm(MEDV~INDUS, data = Housing)
+print(simpleLinearRegressionThree)
+```
+```{r pressure, echo=FALSE}
+
+plot(Housing$INDUS, Housing$MEDV, xlab = "INDUS", ylab="MEDV")
+
+betas <- coef(simpleLinearRegressionThree)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(min(Housing$INDUS), max(Housing$INDUS),1)
+yPredictions <- beta0 + beta1*xVals
+lines(xVals, yPredictions, col='red')
+
+```
+From the scatterplot, I can see a very weak negative linear relationship between INDUS and MEDV.
+
+```{r}
+summary(simpleLinearRegressionThree)
+confint(simpleLinearRegressionThree)
+```
+The R-squared value is very weak, this indicates that the model doesn't fit the data very well.
+
+
+
+
+
+
+####The fourth predictor: DIS
+The fourth predictor I chose is DIS which is the weighted distances to five Boston employment centers
+Model: predicted MEDV = 18.390+1.092*DIS
+```{r}
+simpleLinearRegressionFour <- lm(MEDV~DIS, data = Housing)
+print(simpleLinearRegressionFour)
+```
+```{r pressure, echo=FALSE}
+
+plot(Housing$DIS, Housing$MEDV, xlab = "DIS", ylab="MEDV")
+
+betas <- coef(simpleLinearRegressionFour)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(min(Housing$DIS), max(Housing$DIS),1)
+yPredictions <- beta0 + beta1*xVals
+lines(xVals, yPredictions, col='red')
+
+```
+It is hard to tell whether there's a linear relationship between DIS and MEDV.
+
+In conclude, after using four predictors to do simple linear regression, I don't think simple linear regression is the best model to do prediction.
+
+```{r}
+summary(simpleLinearRegressionFour)
+confint(simpleLinearRegressionFour)
+```
+The R-squared value is super weak, this indicates that the model doesn't fit the data.
+
+
+
+
+
+
+
+##(3) Polynomial Regression:
+
+####The first predictor is CRIM
+```{r}
+quadraticRegressionOne <- lm(MEDV~CRIM+I(CRIM^2), data=Housing)
+print(quadraticRegressionOne)
+```
+
+```{r pressure, echo=FALSE}
+plot(Housing$CRIM, Housing$MEDV, xlab="CRIM", ylab = "MEDV")
+
+minX <- min(Housing$CRIM)
+maxX <- max(Housing$CRIM)
+
+betas <- coef(quadraticRegressionOne)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX, 0.01)
+quadraticYPredictionOne <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals, quadraticYPredictionOne, col = 'blue', lty=2)
+
+```
+```{r}
+summary(quadraticRegressionOne)
+confint(quadraticRegressionOne)
+```
+The R-squared value is small, which indicates that the model doesn't fit the data very well.
+
+
+
+####The second predictor is RM
+```{r}
+quadraticRegressionTwo <- lm(MEDV~RM+I(RM^2), data=Housing)
+print(quadraticRegressionTwo)
+```
+```{r pressure, echo=FALSE}
+plot(Housing$RM, Housing$MEDV, xlab="RM", ylab = "MEDV")
+
+minX <- min(Housing$RM)
+maxX <- max(Housing$RM)
+
+betas <- coef(quadraticRegressionTwo)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX, 0.01)
+quadraticYPredictionTwo <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals, quadraticYPredictionTwo, col = 'blue', lty=2)
+
+```
+```{r}
+summary(quadraticRegressionTwo)
+confint(quadraticRegressionTwo)
+```
+The R-squared value here is fine. Not too bad.
+
+
+
+
+
+####The third predictor is INDUS
+```{r}
+quadraticRegressionThree <- lm(MEDV~INDUS+I(INDUS^2), data=Housing)
+print(quadraticRegressionThree)
+```
+```{r pressure, echo=FALSE}
+plot(Housing$INDUS, Housing$MEDV, xlab="INDUS", ylab = "MEDV")
+
+minX <- min(Housing$INDUS)
+maxX <- max(Housing$INDUS)
+
+betas <- coef(quadraticRegressionThree)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX, 0.01)
+quadraticYPredictionThree <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals, quadraticYPredictionThree, col = 'blue', lty=2)
+
+```
+```{r}
+summary(quadraticRegressionThree)
+confint(quadraticRegressionThree)
+```
+The R-squared value here is small.Not good.
+
+
+
+
+####The fourth predictor is DIS
+```{r}
+quadraticRegressionFourth <- lm(MEDV~DIS+I(DIS^2), data=Housing)
+print(quadraticRegressionFourth)
+```
+
+```{r pressure, echo=FALSE}
+plot(Housing$DIS, Housing$MEDV, xlab="DIS", ylab = "MEDV")
+
+minX <- min(Housing$DIS)
+maxX <- max(Housing$DIS)
+
+betas <- coef(quadraticRegressionFourth)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX, 0.01)
+quadraticYPredictionFourth <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals, quadraticYPredictionFourth, col = 'blue', lty=2)
+
+```
+```{r}
+summary(quadraticRegressionFourth)
+confint(quadraticRegressionFourth)
+```
+The R-squared value here is super small, which means that the quadratic model doesn't fit the data.
+
+
+####In conclude, I think the best model is the multiple linear regression model.
+
+
+
+
+
+
+
+

@@ -1,0 +1,3 @@
+Summary:
+
+I used multiple linear regression model, simple linear regression model, and polynomial regression model (quadratics). I picked four predictors from the dataset since there are too many predictors. I picked four predictors, get the coefficients and fit models for them, plot the data and the prediction model, and compare the R-squared value. In conclude, the multiple linear regression model performs better relative to other models. 
