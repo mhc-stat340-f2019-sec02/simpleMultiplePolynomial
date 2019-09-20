@@ -1,0 +1,65 @@
+---
+title: "LAB0_sec02.Rmd"
+output: html_document
+---
+
+The following R code loads packages needed in this assignment.
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+## LAB for Class04
+
+**The Goal**
+Given a data set containing characteristics about the Boston housing market, explore methods for predicting housing prices.
+
+You'll need to clone this repository using RStudio first. 
+Practice writing and adding code that produces a simple linear regression, multiple linear regression, and polynomial regression.
+Include a visual and quantitative method for assessing whether some models may better explain housing prices than other models.
+
+We will discuss some models students have proposed and ways to communicate these models to a lay audience.
+
+### Data
+The dataset and the data dictionary are included in the folder called data.
+
+### Questions
+SIMPLE LINEAR REGRESSION MODEL - DISTANCE TO EMPLOYMENT CENTERS
+```{r}
+boston_data <- read.csv("boston_data.csv")
+LRModel <- lm(MEDV~DIS,data=boston_data)
+summary(LRModel)
+ggplot(boston_data, aes(x=DIS, y=MEDV)) + geom_point(color = 'maroon') + geom_smooth(method=lm) + ggtitle('Simple Linear Regression Model')
+```
+
+
+
+MULTIPLE LINEAR REGRESSION MODEL - DISTANCE, RADIUS, TAX, CRIME
+```{r}
+boston_data <- read.csv("boston_data.csv")
+MRModel <- lm(MEDV~DIS + RAD + CRIM + TAX, data=boston_data)
+summary(MRModel)
+ggplot(boston_data, aes(x=DIS + CRIM + TAX + RAD, y=MEDV)) + geom_point(color = 'maroon') + geom_smooth(method=lm) + ggtitle('Multiple Linear Regression Model')
+```
+
+
+POLYNOMIAL REGRESSION MODEL
+```{r}
+Boston_data_1 = boston_data
+Boston_data_1$DIS=Boston_data_1$DIS^2
+Boston_data_1$DIS3=Boston_data_1$DIS^3
+Boston_data_1$DIS4=Boston_data_1$DIS^4
+PRModel=lm(MEDV ~ ., data=Boston_data_1)
+ggplot() + geom_point(aes(x = Boston_data_1$DIS, y = Boston_data_1$MEDV), color = 'maroon') + geom_line(aes(x=Boston_data_1$DIS,y=predict(PRModel,newdata=Boston_data_1)),color='blue') + ggtitle('Polynomial Regression Model') + xlab('DIS') + ylab('MEDV')
+```
+
+* How would you explain SSE?
+
+The error is the difference between the value that has been actually observed in the data and the value that our model predcits. However, the sum of the errors is zero, on average, since errors can be equally likely positive or negative. This would mean that there are no errors, which is not true. By squaring the errors, this problem is overcome. The smaller the SSE, the more accurate a model is. 
+
+
+* How would you explain your model?
+
+For my simple linear regression model, I have used DIS as as predictor for Housing prices in Boston, which shows a slight positve relationship, meaning that we can predict that housing prices could increase if there are employment centers close by. Similarly, for my multiple regression model, I used DIS, CRIM, TAX and RAD. This model shows a downward regression line. For the Polynomial model, I used DIST as a predictor again.  
