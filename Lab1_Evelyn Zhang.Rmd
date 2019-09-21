@@ -1,0 +1,620 @@
+---
+title: "LAB1"
+author: "Evelyn Zhang"
+date: "9/19/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+
+## Read data
+
+```{r}
+data<-read.csv('data/boston_data.csv')
+data
+```
+
+## Plots and regression with each variable against y
+
+```{r}
+x<- data$CRIM
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Per capita crime rate by town"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+minX <- min(x)
+maxX <- max(x)
+
+#linear regression
+simpleLinearRegression <- lm(y~x,data=data)
+summary(simpleLinearRegression)
+#quadratic regression
+quadraticRegression <- lm(y~x+I(x^2),data=data)
+summary(quadraticRegression)
+#cubic regression
+cubicRegression <- lm(y~x+I(x^2)+I(x^3),data=data)
+summary(cubicRegression)
+#inverse x regression
+inverseRegression <- lm(y~I(1/x),data=data)
+summary(inverseRegression)
+
+#linear regression
+betas <- coef(simpleLinearRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+linearYPredictions <- beta0 + beta1*xVals
+lines(xVals,linearYPredictions,col='red')
+
+ssr_SLR = sum((fitted(simpleLinearRegression) - y)^2) #NEW
+
+#quadratic regression
+betas <- coef(quadraticRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX,0.01)
+quadraticYPredictions <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals,quadraticYPredictions,col='blue', lty=2)
+
+ssr_QR = sum((fitted(quadraticRegression) - y)^2) #NEW
+
+#cubic regression
+betas <- coef(cubicRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+beta3 <- betas[4]
+
+xVals <- seq(minX,maxX,0.01)
+cubicYPredictions <- beta0 + beta1*xVals + beta2*xVals^2 + beta3*xVals^3
+lines(xVals,cubicYPredictions,col='orange',lty=5)
+
+ssr_CR = sum((fitted(cubicRegression) - y)^2) #NEW
+
+sprintf("SSR Simple Linear Regression = %.2f",ssr_SLR)
+sprintf("SSR Quadratic Regression = %.2f",ssr_QR)
+sprintf("SSR Cubic Regression = %.2f",ssr_CR)
+
+#inverse regression
+betas <- coef(inverseRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+#***How do I fit a y=1/x regression? 
+linearYPredictions <- beta0 + beta1/xVals
+lines(xVals,linearYPredictions,col='green')
+
+
+legend(1,26,legend=c("Lin Reg.","Quad. Reg", "Cubic Reg.", "Inverse Reg." )
+                     ,col=c('red','blue','orange', 'green')
+                     ,lty=c(1,2,5)
+)
+
+```
+```{r}
+plot(data$ZN, data$MEDV
+     ,xlab="Proportion of residential land zoned for lots over 25,000 sq. ft"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+```
+```{r}
+x<- data$INDUS
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Proportion of non-retail business acres per town"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+minX <- min(x)
+maxX <- max(x)
+
+#linear regression
+simpleLinearRegression <- lm(y~x,data=data)
+summary(simpleLinearRegression)
+#quadratic regression
+quadraticRegression <- lm(y~x+I(x^2),data=data)
+summary(quadraticRegression)
+#cubic regression
+cubicRegression <- lm(y~x+I(x^2)+I(x^3),data=data)
+summary(cubicRegression)
+
+#linear regression
+betas <- coef(simpleLinearRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+linearYPredictions <- beta0 + beta1*xVals
+lines(xVals,linearYPredictions,col='red')
+
+ssr_SLR = sum((fitted(simpleLinearRegression) - y)^2) #NEW
+
+#quadratic regression
+betas <- coef(quadraticRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX,0.01)
+quadraticYPredictions <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals,quadraticYPredictions,col='blue', lty=2)
+
+ssr_QR = sum((fitted(quadraticRegression) - y)^2) #NEW
+
+
+#cubic regression
+betas <- coef(cubicRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+beta3 <- betas[4]
+
+xVals <- seq(minX,maxX,0.01)
+cubicYPredictions <- beta0 + beta1*xVals + beta2*xVals^2 + beta3*xVals^3
+lines(xVals,cubicYPredictions,col='orange',lty=5)
+
+ssr_CR = sum((fitted(cubicRegression) - y)^2) #NEW
+
+sprintf("SSR Simple Linear Regression = %.2f",ssr_SLR)
+sprintf("SSR Quadratic Regression = %.2f",ssr_QR)
+sprintf("SSR Cubic Regression = %.2f",ssr_CR)
+
+
+legend(1,26,legend=c("Lin Reg.","Quad. Reg", "Cubic Reg." )
+                     ,col=c('red','blue','orange')
+                     ,lty=c(1,2,5)
+)
+
+
+```
+
+```{r}
+x<- data$CHAS
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+```
+
+
+```{r}
+x<- data$NOX
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Nitric oxide concentration (parts per 10 million)"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+minX <- min(x)
+maxX <- max(x)
+
+#linear regression
+simpleLinearRegression <- lm(y~x,data=data)
+summary(simpleLinearRegression)
+#quadratic regression
+quadraticRegression <- lm(y~x+I(x^2),data=data)
+summary(quadraticRegression)
+#cubic regression
+cubicRegression <- lm(y~x+I(x^2)+I(x^3),data=data)
+summary(cubicRegression)
+
+#linear regression
+betas <- coef(simpleLinearRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+linearYPredictions <- beta0 + beta1*xVals
+lines(xVals,linearYPredictions,col='red')
+
+ssr_SLR = sum((fitted(simpleLinearRegression) - y)^2) #NEW
+
+#quadratic regression
+betas <- coef(quadraticRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX,0.01)
+quadraticYPredictions <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals,quadraticYPredictions,col='blue', lty=2)
+
+ssr_QR = sum((fitted(quadraticRegression) - y)^2) #NEW
+
+#cubic regression
+betas <- coef(cubicRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+beta3 <- betas[4]
+
+xVals <- seq(minX,maxX,0.01)
+cubicYPredictions <- beta0 + beta1*xVals + beta2*xVals^2 + beta3*xVals^3
+lines(xVals,cubicYPredictions,col='orange',lty=5)
+
+ssr_CR = sum((fitted(cubicRegression) - y)^2) #NEW
+
+sprintf("SSR Simple Linear Regression = %.2f",ssr_SLR)
+sprintf("SSR Quadratic Regression = %.2f",ssr_QR)
+sprintf("SSR Cubic Regression = %.2f",ssr_CR)
+
+legend(1,26,legend=c("Lin Reg.","Quad. Reg", "Cubic Reg." )
+                     ,col=c('red','blue','orange')
+                     ,lty=c(1,2,5)
+)
+
+```
+
+```{r}
+x<- data$RM
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Average number of rooms per dwelling"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+#linear regression
+simpleLinearRegression <- lm(y~x,data=data)
+summary(simpleLinearRegression)
+#quadratic regression
+quadraticRegression <- lm(y~x+I(x^2),data=data)
+summary(quadraticRegression)
+#cubic regression
+cubicRegression <- lm(y~x+I(x^2)+I(x^3),data=data)
+summary(cubicRegression)
+
+minX <- min(x)
+maxX <- max(x)
+
+#linear regression
+betas <- coef(simpleLinearRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+linearYPredictions <- beta0 + beta1*xVals
+lines(xVals,linearYPredictions,col='red')
+
+ssr_SLR = sum((fitted(simpleLinearRegression) - y)^2) #NEW
+
+#quadratic regression
+betas <- coef(quadraticRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX,0.01)
+quadraticYPredictions <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals,quadraticYPredictions,col='blue', lty=2)
+
+ssr_QR = sum((fitted(quadraticRegression) - y)^2) #NEW
+
+#cubic regression
+betas <- coef(cubicRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+beta3 <- betas[4]
+
+xVals <- seq(minX,maxX,0.01)
+cubicYPredictions <- beta0 + beta1*xVals + beta2*xVals^2 + beta3*xVals^3
+lines(xVals,cubicYPredictions,col='orange',lty=5)
+
+ssr_CR = sum((fitted(cubicRegression) - y)^2) #NEW
+
+sprintf("SSR Simple Linear Regression = %.2f",ssr_SLR)
+sprintf("SSR Quadratic Regression = %.2f",ssr_QR)
+sprintf("SSR Cubic Regression = %.2f",ssr_CR)
+
+
+legend(1,26,legend=c("Lin Reg.","Quad. Reg", "Cubic Reg." )
+                     ,col=c('red','blue','orange')
+                     ,lty=c(1,2,5)
+)
+
+```
+
+```{r}
+x<- data$AGE
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Proportion of owner-occupied units built prior to 1940"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+#linear regression
+simpleLinearRegression <- lm(y~x,data=data)
+summary(simpleLinearRegression)
+#quadratic regression
+quadraticRegression <- lm(y~x+I(x^2),data=data)
+summary(quadraticRegression)
+#cubic regression
+cubicRegression <- lm(y~x+I(x^2)+I(x^3),data=data)
+summary(cubicRegression)
+
+minX <- min(x)
+maxX <- max(x)
+
+#linear regression
+betas <- coef(simpleLinearRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+linearYPredictions <- beta0 + beta1*xVals
+lines(xVals,linearYPredictions,col='red')
+
+ssr_SLR = sum((fitted(simpleLinearRegression) - y)^2) #NEW
+
+#quadratic regression
+betas <- coef(quadraticRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX,0.01)
+quadraticYPredictions <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals,quadraticYPredictions,col='blue', lty=2)
+
+ssr_QR = sum((fitted(quadraticRegression) - y)^2) #NEW
+
+#cubic regression
+betas <- coef(cubicRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+beta3 <- betas[4]
+
+xVals <- seq(minX,maxX,0.01)
+cubicYPredictions <- beta0 + beta1*xVals + beta2*xVals^2 + beta3*xVals^3
+lines(xVals,cubicYPredictions,col='orange',lty=5)
+
+ssr_CR = sum((fitted(cubicRegression) - y)^2) #NEW
+
+sprintf("SSR Simple Linear Regression = %.2f",ssr_SLR)
+sprintf("SSR Quadratic Regression = %.2f",ssr_QR)
+sprintf("SSR Cubic Regression = %.2f",ssr_CR)
+
+
+legend(1,26,legend=c("Lin Reg.","Quad. Reg", "Cubic Reg." )
+                     ,col=c('red','blue','orange')
+                     ,lty=c(1,2,5)
+)
+
+
+```
+
+```{r}
+x<- data$DIS
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Weighted distances to five Boston employment centers"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+#linear regression
+simpleLinearRegression <- lm(y~x,data=data)
+summary(simpleLinearRegression)
+#quadratic regression
+quadraticRegression <- lm(y~x+I(x^2),data=data)
+summary(quadraticRegression)
+#cubic regression
+cubicRegression <- lm(y~x+I(x^2)+I(x^3),data=data)
+summary(cubicRegression)
+
+minX <- min(x)
+maxX <- max(x)
+
+#linear regression
+betas <- coef(simpleLinearRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+linearYPredictions <- beta0 + beta1*xVals
+lines(xVals,linearYPredictions,col='red')
+
+ssr_SLR = sum((fitted(simpleLinearRegression) - y)^2) #NEW
+
+#quadratic regression
+betas <- coef(quadraticRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX,0.01)
+quadraticYPredictions <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals,quadraticYPredictions,col='blue', lty=2)
+
+ssr_QR = sum((fitted(quadraticRegression) - y)^2) #NEW
+
+#cubic regression
+betas <- coef(cubicRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+beta3 <- betas[4]
+
+xVals <- seq(minX,maxX,0.01)
+cubicYPredictions <- beta0 + beta1*xVals + beta2*xVals^2 + beta3*xVals^3
+lines(xVals,cubicYPredictions,col='orange',lty=5)
+
+ssr_CR = sum((fitted(cubicRegression) - y)^2) #NEW
+
+sprintf("SSR Simple Linear Regression = %.2f",ssr_SLR)
+sprintf("SSR Quadratic Regression = %.2f",ssr_QR)
+sprintf("SSR Cubic Regression = %.2f",ssr_CR)
+
+
+legend(1,26,legend=c("Lin Reg.","Quad. Reg", "Cubic Reg." )
+                     ,col=c('red','blue','orange')
+                     ,lty=c(1,2,5)
+       
+       
+)
+
+```
+
+
+
+```{r}
+x<- data$RAD
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Index of accessibility to radial highways"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+```
+
+
+```{r}
+x<- data$TAX
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Full-value property tax rate per $10,000"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+```
+
+
+```{r}
+x<- data$B
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="1000(Bk - 0.63)², where Bk is the proportion of [people of African American descent] by town"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+```
+
+
+```{r}
+x<- data$LSTAT
+y<- data$MEDV
+
+plot(x, y
+     ,xlab="Percentage of lower status of the population"
+     ,ylab="Median value of owner-occupied homes in $1000s"
+     ,tck=0.02)
+
+#linear regression
+simpleLinearRegression <- lm(y~x,data=data)
+summary(simpleLinearRegression)
+#quadratic regression
+quadraticRegression <- lm(y~x+I(x^2),data=data)
+summary(quadraticRegression)
+#cubic regression
+cubicRegression <- lm(y~x+I(x^2)+I(x^3),data=data)
+summary(cubicRegression)
+
+minX <- min(x)
+maxX <- max(x)
+
+#linear regression
+betas <- coef(simpleLinearRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+
+xVals <- seq(minX,maxX,0.01)
+linearYPredictions <- beta0 + beta1*xVals
+lines(xVals,linearYPredictions,col='red')
+
+ssr_SLR = sum((fitted(simpleLinearRegression) - y)^2) #NEW
+
+#quadratic regression
+betas <- coef(quadraticRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+
+xVals <- seq(minX,maxX,0.01)
+quadraticYPredictions <- beta0 + beta1*xVals + beta2*xVals^2
+lines(xVals,quadraticYPredictions,col='blue', lty=2)
+
+ssr_QR = sum((fitted(quadraticRegression) - y)^2) #NEW
+
+#cubic regression
+betas <- coef(cubicRegression)
+beta0 <- betas[1]
+beta1 <- betas[2]
+beta2 <- betas[3]
+beta3 <- betas[4]
+
+xVals <- seq(minX,maxX,0.01)
+cubicYPredictions <- beta0 + beta1*xVals + beta2*xVals^2 + beta3*xVals^3
+lines(xVals,cubicYPredictions,col='orange',lty=5)
+
+ssr_CR = sum((fitted(cubicRegression) - y)^2) #NEW
+
+sprintf("SSR Simple Linear Regression = %.2f",ssr_SLR)
+sprintf("SSR Quadratic Regression = %.2f",ssr_QR)
+sprintf("SSR Cubic Regression = %.2f",ssr_CR)
+
+legend(1,26,legend=c("Lin Reg.","Quad. Reg", "Cubic Reg." )
+                     ,col=c('red','blue','orange')
+                     ,lty=c(1,2,5)
+)
+
+
+```
+
+
+# Put all relevant variables together, it seems that cubic model is the most accurate according to SSR
+```{r}
+x1<- data$CRIM
+x2<- data$INDUS
+x3<- data$NOX
+x4<- data$RM
+x5<- data$AGE
+x6<- data$DIS
+x7<- data$LSTAT
+y<- data$MEDV
+
+totalRegression <- lm(y~x1+x2+x3+x4+x5+x6+x7+I(x1^2)+I(x2^2)+I(x3^2)+I(x4^2)+I(x1^5)+I(x6^2)+I(x7^2)+I(x1^3)+I(x2^3)+I(x3^3)+I(x4^3)+I(x5^3)+I(x6^3)+I(x7^3),data=data) 
+
+summary(totalRegression)
+
+```
+
+### Questions
+
+# 1. How would you explain SSE?
+# SSE stands for sum of squared errors. It is the sum of the squared difference between predicted y values using x variables and the actual y values from the sample. 
+
+# 2. How would you explain your model?
+# By looking at the plot of each x-variable against y, I determined that CRIM, INDUS, NOX, RM, AGE, DIS, and LSTAT are the x-variables related to y. By looking at SSR of SLR, QR and CR, the best model seems to be the cubic model. Thus, the final regression is a cubic regressio of MEDV on the seven factors. 
+
+### Additional Questions for the assignment
+# 1. How can I best determine which variables are related to y? 
+# 2. How to fit a y=1/x regression or y=ln(x) regression? 
+# 3. How do I put polynomial and multiple regerssion together? 
+# 4. How to deal with discrete variables? Ex. RAD: Index of accessibility to radial highways, CHAS: Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
+
